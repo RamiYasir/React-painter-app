@@ -16,6 +16,7 @@ const Canvas: FC<CanvasProps> = ({ width, height }: CanvasProps) => {
   } = useMouseCoordinates();
 
   // useMode could be where we figure out the logic for which usePainter callbacks to use when.
+  // because it's likely to be where we add event listeners, we can also deal with updateCoordinates there.
 
   // isDrawing needs to be passed in somehow.
   // I'm not a fan of how these state variables are repeated between canvas and usePainter.

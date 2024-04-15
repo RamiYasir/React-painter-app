@@ -1,4 +1,4 @@
-import React, { FC, useRef, useEffect, useState, useCallback } from "react";
+import React, { FC, useRef, useEffect, useState } from "react";
 import { usePainter } from "../hooks/usePainter";
 
 interface CanvasProps {
@@ -11,10 +11,14 @@ const Canvas: FC<CanvasProps> = ({ width, height }: CanvasProps) => {
   const [ctx, setCtx] = useState<CanvasRenderingContext2D>();
   const lastX = useRef(0);
   const lastY = useRef(0);
-  const isDrawing = useRef(false);
 
+  // useMode could be where we figure out the logic for which usePainter to use when.
+
+  // isDrawing needs to be passed in somehow.
+  // I'm not a fan of how these state variables are repeated between canvas and usePainter.
   const draw = (event: MouseEvent): void => {
-    if (!ctx || !ctx || !isDrawing.current) {
+    // uses isDrawing
+    if (!ctx || !ctx) {
       return;
     }
 
@@ -26,18 +30,9 @@ const Canvas: FC<CanvasProps> = ({ width, height }: CanvasProps) => {
     [lastX.current, lastY.current] = [event.offsetX, event.offsetY];
   };
 
+  // pass canvasRef to usePainter, get ctx in usePainter.
+  // really make canvas as dumb as possible.
   const [handleDraw, handlePainterDown, handlePainterOut] = usePainter(draw);
-
-  // const handleMouseDown = (event: MouseEvent): void => {
-  //   isDrawing.current = true;
-  //   [lastX.current, lastY.current] = [event.offsetX, event.offsetY];
-  //   console.log(isDrawing.current);
-  // };
-
-  // const handleMouseOut = (): void => {
-  //   isDrawing.current = false;
-  //   console.log(isDrawing.current);
-  // };
 
   useEffect(() => {
     if (canvasRef && canvasRef.current) {
@@ -62,7 +57,7 @@ const Canvas: FC<CanvasProps> = ({ width, height }: CanvasProps) => {
           `\nctx: ${ctx}`
       );
     }
-  }, [draw, ctx]);
+  }, [handleDraw, handlePainterDown, handlePainterOut, width, height, ctx]);
 
   return (
     <canvas className="border-solid border-2 border-sky-500" ref={canvasRef} />

@@ -3,7 +3,6 @@ import React, { useState, useCallback } from "react";
 import Canvas from "./components/Canvas";
 
 function App() {
-  // const [count, setCount] = useState(0)
   const [height, setHeight] = useState(100);
   const [width, setWidth] = useState(100);
 

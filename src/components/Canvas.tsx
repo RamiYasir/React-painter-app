@@ -1,5 +1,6 @@
 import React, { FC, useRef, useEffect, useState } from "react";
 import { usePainter } from "../hooks/usePainter";
+import useMouseCoordinates from "../hooks/useMouseCoordinates";
 
 interface CanvasProps {
   width: number;
@@ -9,16 +10,17 @@ interface CanvasProps {
 const Canvas: FC<CanvasProps> = ({ width, height }: CanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [ctx, setCtx] = useState<CanvasRenderingContext2D>();
-  const lastX = useRef(0);
-  const lastY = useRef(0);
+  const {
+    updateCoordinates: updateCoordinates,
+    coordinateRefs: [lastX, lastY],
+  } = useMouseCoordinates();
 
-  // useMode could be where we figure out the logic for which usePainter to use when.
+  // useMode could be where we figure out the logic for which usePainter callbacks to use when.
 
   // isDrawing needs to be passed in somehow.
   // I'm not a fan of how these state variables are repeated between canvas and usePainter.
   const draw = (event: MouseEvent): void => {
-    // uses isDrawing
-    if (!ctx || !ctx) {
+    if (!ctx) {
       return;
     }
 
@@ -26,12 +28,11 @@ const Canvas: FC<CanvasProps> = ({ width, height }: CanvasProps) => {
     ctx.moveTo(lastX.current, lastY.current);
     ctx.lineTo(event.offsetX, event.offsetY);
     ctx.stroke();
-
-    [lastX.current, lastY.current] = [event.offsetX, event.offsetY];
   };
 
-  // pass canvasRef to usePainter, get ctx in usePainter.
+  // pass canvasRef to usePainter, get ctx in usePainter?
   // really make canvas as dumb as possible.
+  // width and height might be a candidate for Context
   const [handleDraw, handlePainterDown, handlePainterOut] = usePainter(draw);
 
   useEffect(() => {
@@ -39,8 +40,11 @@ const Canvas: FC<CanvasProps> = ({ width, height }: CanvasProps) => {
       setCtx(canvasRef.current.getContext("2d")!);
 
       if (ctx) {
+        // maybe this stuff can go in a useMode
         canvasRef.current?.addEventListener("mousedown", handlePainterDown);
+        canvasRef.current?.addEventListener("mousedown", updateCoordinates);
         canvasRef.current?.addEventListener("mousemove", handleDraw);
+        canvasRef.current?.addEventListener("mousemove", updateCoordinates);
         canvasRef.current?.addEventListener("mouseup", handlePainterOut);
         canvasRef.current?.addEventListener("mouseout", handlePainterOut);
 
@@ -57,7 +61,15 @@ const Canvas: FC<CanvasProps> = ({ width, height }: CanvasProps) => {
           `\nctx: ${ctx}`
       );
     }
-  }, [handleDraw, handlePainterDown, handlePainterOut, width, height, ctx]);
+  }, [
+    handleDraw,
+    handlePainterDown,
+    handlePainterOut,
+    updateCoordinates,
+    width,
+    height,
+    ctx,
+  ]);
 
   return (
     <canvas className="border-solid border-2 border-sky-500" ref={canvasRef} />

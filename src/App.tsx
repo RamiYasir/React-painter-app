@@ -1,6 +1,7 @@
 import "./App.css";
 import React, { useState, useCallback } from "react";
 import Canvas from "./components/Canvas";
+import { PainterContextProvider } from "./context/PainterContext";
 
 function App() {
   const [height, setHeight] = useState(100);
@@ -15,7 +16,9 @@ function App() {
 
   return (
     <div className="h-screen" ref={divCallback}>
-      <Canvas width={width} height={height} />
+      <PainterContextProvider>
+        <Canvas width={width} height={height} />
+      </PainterContextProvider>
     </div>
   );
 }

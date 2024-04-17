@@ -1,5 +1,6 @@
 import React, { FC, useRef, useEffect, useState, useContext } from "react";
 import { usePainter } from "../hooks/usePainter";
+import { useShapePainter } from "../hooks/useShapePainter";
 import { PainterContext } from "../context/PainterContext";
 
 interface CanvasProps {
@@ -28,28 +29,28 @@ const Canvas: FC<CanvasProps> = ({ width, height }: CanvasProps) => {
     ctx.stroke();
   };
 
-  // const drawRect = (event: MouseEvent): void => {
-  //   if (!ctx) {
-  //     return;
-  //   }
+  const drawRect = (event: MouseEvent): void => {
+    if (!ctx) {
+      return;
+    }
 
-  //   ctx.beginPath();
-  //   ctx.moveTo(lastX.current, lastY.current);
-  //   ctx.strokeRect(
-  //     lastX.current,
-  //     lastY.current,
-  //     event.offsetX - lastX.current,
-  //     event.offsetY - lastY.current
-  //   );
-  // };
+    ctx.beginPath();
+    ctx.moveTo(context.previousX, context.previousY);
+    ctx.strokeRect(
+      context.previousX,
+      context.previousY,
+      event.offsetX - context.previousX,
+      event.offsetY - context.previousY
+    );
+  };
 
   // pass canvasRef to usePainter, get ctx in usePainter?
   // really make canvas as dumb as possible.
   // width and height might be a candidate for Context
-  const [handleDraw, handlePainterDown, handlePainterOut] =
-    usePainter(drawStroke);
-  // const [handleDrawRect, handlePainterDownRect, handlePainterOutRect] =
-  //   usePainter(drawRect);
+  // const [handleDraw, handlePainterDown, handlePainterOut] =
+  //   usePainter(drawStroke);
+  const [handleDrawRect, handlePainterDownRect, handlePainterOutRect] =
+    useShapePainter(drawRect);
 
   useEffect(() => {
     if (canvasRef && canvasRef.current) {
@@ -57,13 +58,14 @@ const Canvas: FC<CanvasProps> = ({ width, height }: CanvasProps) => {
 
       if (ctx) {
         // maybe this stuff can go in a useMode
-        canvasRef.current?.addEventListener("mousedown", handlePainterDown);
-        // canvasRef.current?.addEventListener("mousedown", handlePainterDownRect);
-        canvasRef.current?.addEventListener("mousemove", handleDraw);
-        // canvasRef.current?.addEventListener("mousemove", handleDrawRect);
-        canvasRef.current?.addEventListener("mouseup", handlePainterOut);
-        // canvasRef.current?.addEventListener("mousemove", handlePainterOutRect);
-        canvasRef.current?.addEventListener("mouseout", handlePainterOut);
+        // canvasRef.current?.addEventListener("mousedown", handlePainterDown);
+        canvasRef.current?.addEventListener("mousedown", handlePainterDownRect);
+        // canvasRef.current?.addEventListener("mousemove", handleDraw);
+        canvasRef.current?.addEventListener("mousemove", handleDrawRect);
+        // canvasRef.current?.addEventListener("mouseup", handlePainterOut);
+        canvasRef.current?.addEventListener("mouseout", handlePainterOutRect);
+        canvasRef.current?.addEventListener("mouseup", handlePainterOutRect);
+        // canvasRef.current?.addEventListener("mouseout", handlePainterOut);
 
         ctx.canvas.width = width - 20;
         ctx.canvas.height = height - 50;
@@ -78,7 +80,17 @@ const Canvas: FC<CanvasProps> = ({ width, height }: CanvasProps) => {
           `\nctx: ${ctx}`
       );
     }
-  }, [handleDraw, handlePainterDown, handlePainterOut, width, height, ctx]);
+  }, [
+    // handleDraw,
+    // handlePainterDown,
+    // handlePainterOut,
+    width,
+    height,
+    ctx,
+    handlePainterDownRect,
+    handleDrawRect,
+    handlePainterOutRect,
+  ]);
 
   return (
     <canvas className="border-solid border-2 border-sky-500" ref={canvasRef} />

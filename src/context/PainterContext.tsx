@@ -8,6 +8,7 @@ interface ExposedData {
 export const PainterContext = createContext({ previousX: 0, previousY: 0 });
 
 export const PainterContextProvider = ({ children }) => {
+  // this should really be lifted state
   const previousX = useRef(0);
   const previousY = useRef(0);
 

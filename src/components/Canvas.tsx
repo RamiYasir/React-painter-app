@@ -1,60 +1,37 @@
 import React, { FC, useRef, useEffect, useState, useContext } from "react";
-// import { usePainter } from "../hooks/usePainter";
+import { useLinePainter } from "../hooks/useLinePainter";
 import { useShapePainter } from "../hooks/useShapePainter";
 import { PainterContext } from "../context/PainterContext";
+import drawHelpers from "../helpers/drawFunctions";
 
 interface CanvasProps {
   width: number;
   height: number;
 }
 
+// pass canvasRef to usePainter, get ctx in usePainter?
+// really make canvas as dumb as possible.
 const Canvas: FC<CanvasProps> = ({ width, height }: CanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [ctx, setCtx] = useState<CanvasRenderingContext2D>();
   const context = useContext(PainterContext);
 
-  // useMode could be where we figure out the logic for which usePainter callbacks to use when.
-  // because it's likely to be where we add event listeners, we can also deal with updateCoordinates there.
-
-  // isDrawing needs to be passed in somehow.
-  // I'm not a fan of how these state variables are repeated between canvas and usePainter.
-  // const drawStroke = (event: MouseEvent): void => {
-  //   if (!ctx) {
-  //     return;
-  //   }
-
-  //   ctx.beginPath();
-  //   ctx.moveTo(context.previousX, context.previousY);
-  //   ctx.lineTo(event.offsetX, event.offsetY);
-  //   ctx.stroke();
-  // };
+  const drawStroke = (event: MouseEvent): void => {
+    if (!ctx) {
+      return;
+    }
+    drawHelpers.drawStroke(event, ctx, context.previousX, context.previousY);
+  };
 
   const drawRect = (event: MouseEvent): void => {
     if (!ctx) {
       return;
     }
-
-    // so the coordinates are wrong _here_
-    // why?
-    // because draw is only called on the mouseup event
-    console.log(
-      `canvas previous coordinates ${context.previousX} ${context.previousY}`
-    );
-    ctx.beginPath();
-    ctx.moveTo(context.previousX, context.previousY);
-    ctx.strokeRect(
-      context.previousX,
-      context.previousY,
-      event.offsetX - context.previousX,
-      event.offsetY - context.previousY
-    );
+    drawHelpers.drawRect(event, ctx, context.previousX, context.previousY);
   };
 
-  // pass canvasRef to usePainter, get ctx in usePainter?
-  // really make canvas as dumb as possible.
-  // width and height might be a candidate for Context
-  // const [handleDraw, handlePainterDown, handlePainterOut] =
-  //   usePainter(drawStroke);
+  const [handleDraw, handlePainterDown, handlePainterOut] =
+    useLinePainter(drawStroke);
   const [handleDrawRect, handlePainterDownRect, handlePainterOutRect] =
     useShapePainter(drawRect);
 
@@ -64,14 +41,14 @@ const Canvas: FC<CanvasProps> = ({ width, height }: CanvasProps) => {
 
       if (ctx) {
         // maybe this stuff can go in a useMode
-        // canvasRef.current?.addEventListener("mousedown", handlePainterDown);
-        canvasRef.current?.addEventListener("mousedown", handlePainterDownRect);
-        // canvasRef.current?.addEventListener("mousemove", handleDraw);
-        canvasRef.current?.addEventListener("mousemove", handleDrawRect);
-        // canvasRef.current?.addEventListener("mouseup", handlePainterOut);
-        canvasRef.current?.addEventListener("mouseout", handlePainterOutRect);
-        canvasRef.current?.addEventListener("mouseup", handlePainterOutRect);
-        // canvasRef.current?.addEventListener("mouseout", handlePainterOut);
+        canvasRef.current?.addEventListener("mousedown", handlePainterDown);
+        // canvasRef.current?.addEventListener("mousedown", handlePainterDownRect);
+        canvasRef.current?.addEventListener("mousemove", handleDraw);
+        // canvasRef.current?.addEventListener("mousemove", handleDrawRect);
+        canvasRef.current?.addEventListener("mouseup", handlePainterOut);
+        canvasRef.current?.addEventListener("mouseout", handlePainterOut);
+        // canvasRef.current?.addEventListener("mouseout", handlePainterOutRect);
+        // canvasRef.current?.addEventListener("mouseup", handlePainterOutRect);
 
         ctx.canvas.width = width - 20;
         ctx.canvas.height = height - 50;
@@ -87,9 +64,9 @@ const Canvas: FC<CanvasProps> = ({ width, height }: CanvasProps) => {
       );
     }
   }, [
-    // handleDraw,
-    // handlePainterDown,
-    // handlePainterOut,
+    handleDraw,
+    handlePainterDown,
+    handlePainterOut,
     width,
     height,
     ctx,

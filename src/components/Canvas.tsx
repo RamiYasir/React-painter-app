@@ -1,5 +1,5 @@
 import React, { FC, useRef, useEffect, useState, useContext } from "react";
-import { usePainter } from "../hooks/usePainter";
+// import { usePainter } from "../hooks/usePainter";
 import { useShapePainter } from "../hooks/useShapePainter";
 import { PainterContext } from "../context/PainterContext";
 
@@ -18,22 +18,28 @@ const Canvas: FC<CanvasProps> = ({ width, height }: CanvasProps) => {
 
   // isDrawing needs to be passed in somehow.
   // I'm not a fan of how these state variables are repeated between canvas and usePainter.
-  const drawStroke = (event: MouseEvent): void => {
-    if (!ctx) {
-      return;
-    }
+  // const drawStroke = (event: MouseEvent): void => {
+  //   if (!ctx) {
+  //     return;
+  //   }
 
-    ctx.beginPath();
-    ctx.moveTo(context.previousX, context.previousY);
-    ctx.lineTo(event.offsetX, event.offsetY);
-    ctx.stroke();
-  };
+  //   ctx.beginPath();
+  //   ctx.moveTo(context.previousX, context.previousY);
+  //   ctx.lineTo(event.offsetX, event.offsetY);
+  //   ctx.stroke();
+  // };
 
   const drawRect = (event: MouseEvent): void => {
     if (!ctx) {
       return;
     }
 
+    // so the coordinates are wrong _here_
+    // why?
+    // because draw is only called on the mouseup event
+    console.log(
+      `canvas previous coordinates ${context.previousX} ${context.previousY}`
+    );
     ctx.beginPath();
     ctx.moveTo(context.previousX, context.previousY);
     ctx.strokeRect(

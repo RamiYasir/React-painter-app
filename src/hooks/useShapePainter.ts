@@ -8,13 +8,16 @@ export const useShapePainter = (draw: (event: MouseEvent) => void) => {
   const handleDraw = useCallback(
     (event: MouseEvent) => {
       if (!isMouseDown.current) {
-        // draw(event);
         [context.previousX, context.previousY] = [event.offsetX, event.offsetY];
+        console.log(
+          `useShapePainter coordinates ${context.previousX} ${context.previousY}`
+        );
       } else {
-        console.log("handleDraw NOT called");
+        // preview of shape
         return;
       }
     },
+    // important to have draw in dependency array so coordinates are updated within the function
     [draw, context.previousX, context.previousY]
   );
 
@@ -28,9 +31,8 @@ export const useShapePainter = (draw: (event: MouseEvent) => void) => {
       draw(event);
       isMouseDown.current = false;
       [context.previousX, context.previousY] = [event.offsetX, event.offsetY];
-      console.log("handleShapePainterOut called");
     },
-    [context.previousX, context.previousY]
+    [draw, context.previousX, context.previousY]
   );
 
   return [handleDraw, handleShapePainterDown, handleShapePainterOut];

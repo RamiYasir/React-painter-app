@@ -11,7 +11,6 @@ export const useMode = (
   lineFunction: (event: MouseEvent) => void,
   rectFunction: (event: MouseEvent) => void
 ) => {
-  //   const [ctx, setCtx] = useState<CanvasRenderingContext2D>();
   const [handleLineDraw, handleLineDown, handleLineOut] =
     useLinePainter(lineFunction);
   const [handleRectDraw, handleRectDown, handleRectOut] =
@@ -47,7 +46,6 @@ export const useMode = (
   );
 
   useEffect(() => {
-    console.log("useEffect in useMode called");
     if (canvas && canvas.current) {
       if (ctx) {
         ctx.canvas.width = width - 20;

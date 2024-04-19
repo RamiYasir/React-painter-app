@@ -9,9 +9,6 @@ export const useShapePainter = (draw: (event: MouseEvent) => void) => {
     (event: MouseEvent) => {
       if (!isMouseDown.current) {
         [context.previousX, context.previousY] = [event.offsetX, event.offsetY];
-        console.log(
-          `useShapePainter coordinates ${context.previousX} ${context.previousY}`
-        );
       } else {
         // preview of shape
         return;
@@ -23,7 +20,6 @@ export const useShapePainter = (draw: (event: MouseEvent) => void) => {
 
   const handleShapePainterDown = useCallback((): void => {
     isMouseDown.current = true;
-    console.log("handleShapePainterDown called");
   }, []);
 
   const handleShapePainterOut = useCallback(

@@ -18,9 +18,6 @@ export const useMode = (
     useShapePainter(rectFunction);
   const context = useContext(PainterContext);
 
-  //   usePainters which store the event handlers
-  //   attach and detatch those event handlers, or else a useState that causes a rerender when toolbar is changed
-
   const removeEventHandlers = useCallback(
     (
       handleDraw: (event: MouseEvent) => void,
@@ -52,46 +49,36 @@ export const useMode = (
   useEffect(() => {
     console.log("useEffect in useMode called");
     if (canvas && canvas.current) {
-      // there may be a problem here. I don't want ctx to be undefined, everything breaks that way.
-      //   setCtx(canvas.current.getContext("2d") || undefined);
-      console.log(context.currentPainter);
       if (ctx) {
-        if (context.currentPainter === "line") {
-          console.log("useMode remove rect, add line");
-          removeEventHandlers(handleRectDraw, handleRectDown, handleRectOut);
-          addEventHandlers(handleLineDraw, handleLineDown, handleLineOut);
-        }
-
-        if (context.currentPainter === "rect") {
-          console.log("useMode remove line, add rect");
-          removeEventHandlers(handleLineDraw, handleLineDown, handleLineOut);
-          addEventHandlers(handleRectDraw, handleRectDown, handleRectOut);
-        }
-
         ctx.canvas.width = width - 20;
         ctx.canvas.height = height - 50;
         ctx.strokeStyle = "blue";
         ctx.lineWidth = 10;
       }
     }
+  }, [width, height, canvas, ctx]);
+
+  useEffect(() => {
+    if (context.currentPainter === "line") {
+      console.log("useMode remove rect, add line");
+      removeEventHandlers(handleRectDraw, handleRectDown, handleRectOut);
+      addEventHandlers(handleLineDraw, handleLineDown, handleLineOut);
+    }
+
+    if (context.currentPainter === "rect") {
+      console.log("useMode remove line, add rect");
+      removeEventHandlers(handleLineDraw, handleLineDown, handleLineOut);
+      addEventHandlers(handleRectDraw, handleRectDown, handleRectOut);
+    }
   }, [
-    width,
-    height,
-    canvas,
-    ctx,
     context.currentPainter,
-    handleLineDraw,
-    handleLineDown,
-    handleLineOut,
-    handleRectDraw,
-    handleRectDown,
-    handleRectOut,
-    addEventHandlers,
     removeEventHandlers,
+    addEventHandlers,
+    handleLineDown,
+    handleLineDraw,
+    handleLineOut,
+    handleRectDown,
+    handleRectDraw,
+    handleRectOut,
   ]);
-
-  //   const context = useContext(PainterContext);
-  //   return [context.currentPainter];
 };
-
-// realised I should probably create toolbar first

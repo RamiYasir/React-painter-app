@@ -6,11 +6,12 @@ const Toolbar: FC = () => {
   const rectRadioRef = useRef<HTMLInputElement>(null);
   const context = useContext(PainterContext);
 
-  const handleSelected = useCallback((event: Event) => {
-    context.setCurrentPainter!((event.target as HTMLInputElement)?.value);
-    // context.currentPainter = (event.target as HTMLInputElement)?.value;
-    console.log(`current painter (Toolbar): ${context.currentPainter}`);
-  }, []);
+  const handleSelected = useCallback(
+    (event: Event) => {
+      context.setCurrentPainter!((event.target as HTMLInputElement)?.value);
+    },
+    [context]
+  );
 
   useEffect(() => {
     lineRadioRef.current?.addEventListener("click", handleSelected);

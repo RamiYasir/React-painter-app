@@ -49,6 +49,8 @@ function drawStrangeRect(
   ctx.strokeRect(
     previousX,
     previousY,
+
+    // these can be minus numbers, can't they?
     event.offsetX - previousY,
     event.offsetY - previousX
   );

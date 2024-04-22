@@ -12,6 +12,7 @@ export const useLinePainter = (draw: (event: MouseEvent) => void) => {
         [context.previousX, context.previousY] = [event.offsetX, event.offsetY];
       }
       [context.previousX, context.previousY] = [event.offsetX, event.offsetY];
+      console.log("handleLineDraw called");
     },
     [draw, context.previousX, context.previousY]
   );
@@ -20,12 +21,14 @@ export const useLinePainter = (draw: (event: MouseEvent) => void) => {
     (event: MouseEvent): void => {
       isMouseDown.current = true;
       [context.previousX, context.previousY] = [event.offsetX, event.offsetY];
+      console.log("handleLineDown called");
     },
     [context.previousX, context.previousY]
   );
 
   const handlePainterOut = useCallback((): void => {
     isMouseDown.current = false;
+    console.log("handleLineOut called");
   }, []);
 
   return [handleDraw, handlePainterDown, handlePainterOut];

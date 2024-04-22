@@ -10,7 +10,7 @@ function App() {
   const [width, setWidth] = useState(100);
   const isStrange = false;
 
-  const divCallback = useCallback((node: any) => {
+  const divCallback = useCallback((node /*: type*/) => {
     if (node !== null) {
       setHeight(node.getBoundingClientRect().height);
       setWidth(node.getBoundingClientRect().width);

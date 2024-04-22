@@ -59,15 +59,18 @@ export const useMode = (
   useEffect(() => {
     if (context.currentPainter === "line") {
       console.log("useMode remove rect, add line");
-      removeEventHandlers(handleRectDraw, handleRectDown, handleRectOut);
       addEventHandlers(handleLineDraw, handleLineDown, handleLineOut);
     }
 
     if (context.currentPainter === "rect") {
       console.log("useMode remove line, add rect");
-      removeEventHandlers(handleLineDraw, handleLineDown, handleLineOut);
       addEventHandlers(handleRectDraw, handleRectDown, handleRectOut);
     }
+
+    return () => {
+      removeEventHandlers(handleLineDraw, handleLineDown, handleLineOut);
+      removeEventHandlers(handleRectDraw, handleRectDown, handleRectOut);
+    };
   }, [
     context.currentPainter,
     removeEventHandlers,

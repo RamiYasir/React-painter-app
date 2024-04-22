@@ -28,18 +28,6 @@ const Canvas: FC<CanvasProps> = ({ width, height }: CanvasProps) => {
     drawHelpers.drawRect(event, ctx, context.previousX!, context.previousY!);
   };
 
-  // const drawStrangeStroke = (event: MouseEvent): void => {
-  //   if (!ctx) {
-  //     return;
-  //   }
-  //   drawHelpers.drawStrangeStroke(
-  //     event,
-  //     ctx,
-  //     context.previousX!,
-  //     context.previousY!
-  //   );
-  // };
-
   useMode(canvasRef, width, height, ctx!, drawStroke, drawRect);
 
   useEffect(() => {
